@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 1 – Algorithms | Physical Computing Year 7</title>
+<style>
+  :root {
+    --navy:  #1A235E;
+    --teal:  #008B8B;
+    --amber: #FFA500;
+    --green: #2E8648;
+    --purple:#6A0DAD;
+    --orange:#E65510;
+    --lgrey: #F0F4F8;
+    --white: #FFFFFF;
+    --dark:  #333344;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--lgrey); color: var(--dark); }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--navy); display: flex; align-items: center;
+    padding: 0 1.5rem; gap: 0; box-shadow: 0 2px 8px #0006;
+  }
+  nav .brand { color: var(--amber); font-weight: 700; font-size: 1rem; padding: 0.9rem 1rem 0.9rem 0; border-right: 2px solid var(--teal); margin-right: 0.5rem; white-space: nowrap; }
+  nav .nav-links { display: flex; flex-wrap: wrap; gap: 0; }
+  nav .nav-links a {
+    color: #B0C8E8; text-decoration: none; font-size: 0.82rem;
+    padding: 0.9rem 0.75rem; transition: background 0.2s, color 0.2s;
+  }
+  nav .nav-links a:hover, nav .nav-links a.active { background: var(--teal); color: #fff; }
+  nav .badge { margin-left: auto; background: var(--teal); color: #fff; font-size: 0.78rem; font-weight: 700; padding: 0.3rem 0.8rem; border-radius: 20px; white-space: nowrap; }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 60%, #2a3a8e);
+    color: #fff; padding: 4rem 2rem 3rem; text-align: center;
+    border-bottom: 6px solid var(--teal);
+  }
+  .hero .label { color: #B0C8E8; font-size: 1rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.1; }
+  .hero h1 span { color: var(--amber); }
+  .hero p { color: #90B8D8; margin-top: 0.8rem; font-size: 1.1rem; }
+  .hero .pills { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.4rem; }
+  .pill { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; padding: 0.3rem 1rem; font-size: 0.85rem; color: #dde; }
+
+  /* ── SECTION WRAPPER ── */
+  section { padding: 3rem 1.5rem; max-width: 1100px; margin: 0 auto; }
+  .section-tag {
+    display: inline-block; background: var(--teal); color: #fff;
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 0.25rem 0.8rem; border-radius: 4px; margin-bottom: 0.6rem;
+  }
+  h2 { font-size: 1.9rem; color: var(--navy); margin-bottom: 1.5rem; }
+  h2 .accent { color: var(--teal); }
+
+  /* ── LEARNING GOALS ── */
+  .goals-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .goal-card {
+    background: #fff; border-radius: 10px; padding: 1.2rem 1.4rem;
+    border-left: 5px solid var(--teal); box-shadow: 0 2px 8px #0001;
+  }
+  .goal-card .tag { font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--teal); margin-bottom: 0.35rem; }
+  .goal-card p { font-size: 0.95rem; line-height: 1.5; }
+
+  /* ── WARM-UP ── */
+  .warmup-box {
+    background: #fff; border-radius: 12px; padding: 2rem;
+    border: 2px solid var(--amber); box-shadow: 0 4px 16px #0001;
+  }
+  .warmup-box .scenario { background: #FFF8E7; border-radius: 8px; padding: 1rem 1.2rem; margin-bottom: 1.5rem; font-size: 1rem; line-height: 1.6; border-left: 4px solid var(--amber); }
+  .warmup-box h3 { color: var(--navy); margin-bottom: 0.8rem; }
+  .question-list { display: grid; gap: 0.7rem; }
+  .question-item {
+    background: var(--lgrey); border-radius: 8px; padding: 0.8rem 1rem;
+    display: flex; align-items: flex-start; gap: 0.8rem; cursor: pointer;
+    border: 2px solid transparent; transition: border 0.2s, background 0.2s;
+  }
+  .question-item:hover { border-color: var(--navy); background: #e8eef6; }
+  .question-item.revealed { background: #e6f4ea; border-color: var(--green); }
+  .qnum { font-weight: 700; color: var(--amber); min-width: 2rem; }
+  .question-item .hint { display: none; font-size: 0.88rem; color: var(--green); margin-top: 0.4rem; font-style: italic; }
+  .question-item.revealed .hint { display: block; }
+
+  /* ── CONTROL STRUCTURES ── */
+  .cs-tabs { display: flex; gap: 0; margin-bottom: 0; border-bottom: 3px solid #dde; }
+  .cs-tab {
+    padding: 0.7rem 1.4rem; font-weight: 700; font-size: 0.95rem; cursor: pointer;
+    border: none; background: none; color: #888; border-bottom: 3px solid transparent;
+    margin-bottom: -3px; transition: all 0.2s;
+  }
+  .cs-tab:hover { color: var(--navy); }
+  .cs-tab.active { color: var(--navy); border-bottom-color: var(--navy); }
+  .cs-tab[data-cs="sequence"].active { border-bottom-color: var(--teal); color: var(--teal); }
+  .cs-tab[data-cs="selection"].active { border-bottom-color: var(--green); color: var(--green); }
+  .cs-tab[data-cs="iteration"].active { border-bottom-color: var(--purple); color: var(--purple); }
+
+  .cs-panel { display: none; background: #fff; border-radius: 0 0 12px 12px; border: 1px solid #dde; border-top: none; padding: 2rem; }
+  .cs-panel.active { display: block; }
+  .cs-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  @media(max-width:680px){ .cs-layout { grid-template-columns: 1fr; } }
+  .cs-def { font-size: 1.05rem; line-height: 1.6; margin-bottom: 1rem; }
+  .cs-def strong { color: var(--teal); }
+  .code-block { background: #1a1a2e; color: #e0e0ff; border-radius: 8px; padding: 1rem 1.2rem; font-family: 'Courier New', monospace; font-size: 0.9rem; line-height: 1.7; overflow-x: auto; }
+  .code-block .kw { color: #ff79c6; } .code-block .fn { color: #8be9fd; }
+  .code-block .cm { color: #6272a4; } .code-block .num { color: #bd93f9; }
+  .code-block .str { color: #f1fa8c; }
+
+  .flowchart { display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .fc-box { border-radius: 6px; padding: 0.5rem 1.2rem; font-size: 0.88rem; font-weight: 600; text-align: center; min-width: 160px; }
+  .fc-start, .fc-end { background: var(--teal); color: #fff; border-radius: 20px; }
+  .fc-step { background: #fff; border: 2px solid var(--navy); color: var(--dark); }
+  .fc-diamond { background: #FFF5CC; border: 2px solid var(--amber); color: var(--dark); transform: none; padding: 0.6rem 1rem; border-radius: 6px; }
+  .fc-arrow { font-size: 1.3rem; color: #aaa; line-height: 1; margin: 2px 0; }
+  .fc-branch { display: flex; gap: 1.5rem; align-items: flex-start; margin-top: 2px; }
+  .fc-branch-col { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .fc-label { font-size: 0.75rem; font-weight: 700; }
+  .fc-yes { color: var(--green); }
+  .fc-no { color: var(--orange); }
+
+  /* ── EXAMPLES ── */
+  .examples-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .example-card { background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px #0001; }
+  .example-card .ex-header { padding: 0.8rem 1.2rem; color: #fff; font-weight: 700; font-size: 1rem; }
+  .example-card .ex-body { padding: 1rem 1.2rem; }
+  .example-card pre { background: var(--lgrey); border-radius: 6px; padding: 0.8rem; font-size: 0.82rem; line-height: 1.6; white-space: pre-wrap; margin-top: 0.5rem; }
+  .cs-badge { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 10px; margin: 0.1rem; }
+  .badge-seq { background: #CCF2F2; color: var(--teal); }
+  .badge-sel { background: #D4EDDA; color: var(--green); }
+  .badge-itr { background: #E8D5F5; color: var(--purple); }
+
+  /* ── QUIZ ── */
+  .quiz-container { background: #fff; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 16px #0001; }
+  .quiz-q { display: none; }
+  .quiz-q.active { display: block; }
+  .quiz-q h3 { font-size: 1.05rem; color: var(--navy); margin-bottom: 1.2rem; line-height: 1.5; }
+  .quiz-options { display: grid; gap: 0.6rem; }
+  .quiz-opt {
+    background: var(--lgrey); border: 2px solid #dde; border-radius: 8px;
+    padding: 0.75rem 1rem; cursor: pointer; font-size: 0.95rem; transition: all 0.18s;
+    text-align: left;
+  }
+  .quiz-opt:hover:not(:disabled) { border-color: var(--navy); background: #e8eef6; }
+  .quiz-opt.correct { background: #D4EDDA; border-color: var(--green); color: var(--green); }
+  .quiz-opt.wrong   { background: #FFE5D0; border-color: var(--orange); color: var(--orange); }
+  .quiz-feedback { margin-top: 1rem; padding: 0.8rem 1rem; border-radius: 8px; font-size: 0.93rem; line-height: 1.5; display: none; }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: #D4EDDA; color: var(--green); }
+  .quiz-feedback.bad { background: #FFE5D0; color: var(--orange); }
+  .quiz-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 1.2rem; }
+  .quiz-progress { font-size: 0.85rem; color: #888; }
+  .btn { background: var(--navy); color: #fff; border: none; border-radius: 8px; padding: 0.6rem 1.4rem; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .btn:hover { background: var(--teal); }
+  .btn:disabled { background: #ccc; cursor: default; }
+  .quiz-score { text-align: center; padding: 1.5rem; display: none; }
+  .quiz-score h3 { font-size: 1.5rem; color: var(--navy); margin-bottom: 0.5rem; }
+  .score-ring { font-size: 3rem; margin: 0.5rem 0; }
+
+  /* ── REFLECT ── */
+  .reflect-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+  .reflect-card { background: #fff; border-radius: 10px; padding: 1.2rem; border-top: 4px solid var(--teal); box-shadow: 0 2px 8px #0001; }
+  .reflect-card .qn { font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--teal); margin-bottom: 0.4rem; }
+  .reflect-card p { font-size: 0.92rem; line-height: 1.55; color: var(--dark); }
+  textarea.workbook {
+    width: 100%; margin-top: 0.6rem; border: 1.5px solid #dde; border-radius: 6px;
+    padding: 0.6rem 0.8rem; font-size: 0.9rem; resize: vertical; min-height: 70px;
+    font-family: inherit; color: var(--dark);
+  }
+  textarea.workbook:focus { outline: none; border-color: var(--teal); }
+  .save-btn { margin-top: 0.4rem; font-size: 0.8rem; padding: 0.35rem 0.8rem; }
+
+  /* ── FOOTER ── */
+  footer { background: var(--navy); color: #90A8C0; text-align: center; padding: 1.5rem 1rem; font-size: 0.85rem; margin-top: 3rem; }
+
+  /* ── DIVIDERS ── */
+  hr.fancy { border: none; border-top: 3px solid var(--teal); opacity: 0.25; margin: 0; }
+  .section-divider { height: 4px; background: linear-gradient(90deg, var(--teal), var(--navy)); }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ─────────────────────────────────────────────────────────────── -->
+<nav>
+  <div class="brand">Year 7 · DT</div>
+  <div class="nav-links">
+    <a href="#goals">Goals</a>
+    <a href="#warmup">Warm Up</a>
+    <a href="#newlearning">Control Structures</a>
+    <a href="#examples">Examples</a>
+    <a href="#quiz">Quiz</a>
+    <a href="#reflect">Reflect</a>
+  </div>
+  <div class="badge">Lesson 1 · Algorithms</div>
+</nav>
+
+<!-- ── HERO ─────────────────────────────────────────────────────────────── -->
+<div class="hero">
+  <div class="label">Physical Computing · Lesson 1</div>
+  <h1>What is an <span>Algorithm</span>?</h1>
+  <p>Understanding the building blocks of every computer program ever written.</p>
+  <div class="pills">
+    <span class="pill">U1 – Algorithm understanding</span>
+    <span class="pill">K1 – Control structures</span>
+    <span class="pill">EQ1 – Why do algorithms matter?</span>
+  </div>
+</div>
+<div class="section-divider"></div>
+
+<!-- ── LEARNING GOALS ────────────────────────────────────────────────────── -->
+<section id="goals">
+  <div class="section-tag">Stage 1 · Desired Results</div>
+  <h2>Learning <span class="accent">Goals</span></h2>
+  <div class="goals-grid">
+    <div class="goal-card" style="border-color:var(--teal)">
+      <div class="tag" style="color:var(--teal)">U1 — Understanding</div>
+      <p>Explain what an <strong>algorithm</strong> is and why it is fundamental to computing.</p>
+    </div>
+    <div class="goal-card" style="border-color:var(--purple)">
+      <div class="tag" style="color:var(--purple)">K1 — Knowledge</div>
+      <p>Identify and describe the three core control structures: <strong>Sequence</strong>, <strong>Selection</strong>, and <strong>Iteration</strong>.</p>
+    </div>
+    <div class="goal-card" style="border-color:var(--amber)">
+      <div class="tag" style="color:var(--amber)">EQ1 — Essential Question</div>
+      <p><em>What is an algorithm, and why is it important in computer science?</em></p>
+    </div>
+    <div class="goal-card" style="border-color:var(--green)">
+      <div class="tag" style="color:var(--green)">Assessment Link</div>
+      <p>These concepts underpin your final task: designing and building a <strong>micro:bit solution</strong>.</p>
+    </div>
+  </div>
+</section>
+<div class="section-divider"></div>
+
+<!-- ── WARM UP ───────────────────────────────────────────────────────────── -->
+<section id="warmup">
+  <div class="section-tag">Warm Up · Think–Pair–Share</div>
+  <h2>The Robot <span class="accent">Sandwich</span> Problem</h2>
+  <div class="warmup-box">
+    <div class="scenario">
+      🤖 You need to teach a <strong>robot</strong> — that can only follow very specific step-by-step instructions — how to make a Vegemite sandwich.<br><br>
+      The robot knows nothing. It cannot guess, assume, or use common sense. <strong>What instructions would you give it?</strong>
+    </div>
+    <h3>Discuss with your partner — click each question to reveal a thinking hint:</h3>
+    <div class="question-list">
+      <div class="question-item" onclick="this.classList.toggle('revealed')">
+        <span class="qnum">Q1</span>
+        <div>
+          <div>What information does the robot need <em>before</em> it can start?</div>
+          <div class="hint">💡 Think: ingredients, tools, location of objects. What if the bread is in the cupboard?</div>
+        </div>
+      </div>
+      <div class="question-item" onclick="this.classList.toggle('revealed')">
+        <span class="qnum">Q2</span>
+        <div>
+          <div>What happens if you skip a step or put steps in the wrong order?</div>
+          <div class="hint">💡 Try spreading Vegemite before opening the jar — the algorithm fails! Order matters.</div>
+        </div>
+      </div>
+      <div class="question-item" onclick="this.classList.toggle('revealed')">
+        <span class="qnum">Q3</span>
+        <div>
+          <div>Does the order of the steps matter? Why?</div>
+          <div class="hint">💡 Yes — algorithms are sequential by nature. The robot cannot anticipate future steps.</div>
+        </div>
+      </div>
+      <div class="question-item" onclick="this.classList.toggle('revealed')">
+        <span class="qnum">Q4</span>
+        <div>
+          <div>Can two people write different instructions and both be 'correct'?</div>
+          <div class="hint">💡 Yes! There is rarely only ONE correct algorithm. Different approaches can all solve the same problem.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="section-divider"></div>
+
+<!-- ── NEW LEARNING ───────────────────────────────────────────────────────── -->
+<section id="newlearning">
+  <div class="section-tag">New Learning · K1</div>
+  <h2>Control <span class="accent">Structures</span></h2>
+  <p style="margin-bottom:1.5rem;font-size:1.05rem;">Every algorithm — and every program — is built from just <strong>three</strong> fundamental control structures. Click each tab to explore them.</p>
+
+  <div class="cs-tabs">
+    <button class="cs-tab active" data-cs="sequence" onclick="showCS('sequence')">➡ Sequence</button>
+    <button class="cs-tab" data-cs="selection" onclick="showCS('selection')">◇ Selection</button>
+    <button class="cs-tab" data-cs="iteration" onclick="showCS('iteration')">↺ Iteration</button>
+  </div>
+
+  <!-- SEQUENCE -->
+  <div class="cs-panel active" id="cs-sequence">
+    <div class="cs-layout">
+      <div>
+        <p class="cs-def"><strong style="color:var(--teal);font-size:1.1rem">SEQUENCE</strong><br>
+        Steps are executed <strong>one after another</strong>, in a fixed order. Every program has sequence — it's the default flow of execution.</p>
+        <p style="margin-bottom:1rem;font-size:0.95rem;">Think of a recipe: you can't eat the cake before you bake it, and you can't bake it before you mix the ingredients.</p>
+        <div class="code-block">
+<span class="cm"># Making a cup of tea — pure sequence</span>
+<span class="fn">boil_kettle</span>()
+<span class="fn">place_teabag</span>(<span class="str">"mug"</span>)
+<span class="fn">pour_water</span>(<span class="num">200</span>, <span class="str">"mL"</span>)
+<span class="fn">wait</span>(<span class="num">3</span>, <span class="str">"minutes"</span>)
+<span class="fn">remove_teabag</span>()
+<span class="fn">add_milk</span>()  <span class="cm"># optional!</span>
+</div>
+        <p style="margin-top:0.8rem;font-size:0.88rem;color:#666;">⚠ Swap any two lines and the algorithm breaks. Try it mentally — what happens if you pour water before placing the teabag?</p>
+      </div>
+      <div>
+        <p style="font-weight:700;color:var(--teal);margin-bottom:0.8rem;text-align:center">Flowchart</p>
+        <div class="flowchart">
+          <div class="fc-box fc-start">START</div>
+          <div class="fc-arrow">↓</div>
+          <div class="fc-box fc-step">Boil kettle</div>
+          <div class="fc-arrow">↓</div>
+          <div class="fc-box fc-step">Place teabag in mug</div>
+          <div class="fc-arrow">↓</div>
+          <div class="fc-box fc-step">Pour boiling water</div>
+          <div class="fc-arrow">↓</div>
+          <div class="fc-box fc-step">Wait 3 minutes</div>
+          <div class="fc-arrow">↓</div>
+          <div class="fc-box fc-step">Remove teabag</div>
+          <div class="fc-arrow">↓</div>
+          <div class="fc-box fc-end">END</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SELECTION -->
+  <div class="cs-panel" id="cs-selection">
+    <div class="cs-layout">
+      <div>
+        <p class="cs-def"><strong style="color:var(--green);font-size:1.1rem">SELECTION</strong><br>
+        The algorithm makes a <strong>decision</strong> and follows different paths depending on whether a <em>condition</em> is True or False.</p>
+        <p style="margin-bottom:1rem;font-size:0.95rem;">Also called <strong>IF–THEN–ELSE</strong>. Selection lets programs respond differently to different situations or data.</p>
+        <div class="code-block">
+<span class="cm"># Simple selection</span>
+<span class="kw">if</span> is_raining:
+    <span class="fn">take_umbrella</span>()
+<span class="kw">else</span>:
+    <span class="fn">leave_umbrella_home</span>()
+
+<span class="cm"># Nested selection (selection inside selection)</span>
+<span class="kw">if</span> score >= <span class="num">90</span>:
+    grade = <span class="str">"A"</span>
+<span class="kw">elif</span> score >= <span class="num">75</span>:
+    grade = <span class="str">"B"</span>
+<span class="kw">else</span>:
+    grade = <span class="str">"C"</span>
+</div>
+      </div>
+      <div>
+        <p style="font-weight:700;color:var(--green);margin-bottom:0.8rem;text-align:center">Flowchart</p>
+        <div class="flowchart">
+          <div class="fc-box fc-start" style="background:var(--green)">START</div>
+          <div class="fc-arrow">↓</div>
+          <div class="fc-box fc-diamond">Is it raining?</div>
+          <div class="fc-arrow">↓</div>
+          <div class="fc-branch">
+            <div class="fc-branch-col">
+              <div class="fc-label fc-yes">YES ↓</div>
+              <div class="fc-box fc-step" style="border-color:var(--green)">Take umbrella</div>
+            </div>
+            <div class="fc-branch-col">
+              <div class="fc-label fc-no">NO ↓</div>
+              <div class="fc-box fc-step" style="border-color:var(--orange)">Leave umbrella</div>
+            </div>
+          </div>
+          <div class="fc-arrow">↓</div>
+          <div class="fc-box fc-end" style="background:var(--green)">END</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ITERATION -->
+  <div class="cs-panel" id="cs-iteration">
+    <div class="cs-layout">
+      <div>
+        <p class="cs-def"><strong style="color:var(--purple);font-size:1.1rem">ITERATION</strong><br>
+        A block of steps is <strong>repeated</strong> — either a fixed number of times (<code>for</code> loop) or until a condition is met (<code>while</code> loop).</p>
+        <p style="margin-bottom:1rem;font-size:0.95rem;">Iteration makes code efficient — instead of writing the same steps 100 times, you write them once inside a loop.</p>
+        <div class="code-block">
+<span class="cm"># FOR loop — counted repetition</span>
+<span class="kw">for</span> card <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>):
+    <span class="fn">deal_card</span>(player)
+
+<span class="cm"># WHILE loop — conditional repetition</span>
+<span class="kw">while</span> battery > <span class="num">0</span>:
+    <span class="fn">play_music</span>()
+    battery -= <span class="num">1</span>
+
+<span class="fn">print</span>(<span class="str">"Battery dead!"</span>)
+</div>
+        <p style="margin-top:0.8rem;font-size:0.88rem;color:#666;">⚠ A <code>while</code> loop that never becomes False runs <em>forever</em> — this is called an <strong>infinite loop</strong> and is a common bug!</p>
+      </div>
+      <div>
+        <p style="font-weight:700;color:var(--purple);margin-bottom:0.8rem;text-align:center">Flowchart (WHILE loop)</p>
+        <div class="flowchart">
+          <div class="fc-box fc-start" style="background:var(--purple)">START</div>
+          <div class="fc-arrow">↓</div>
+          <div class="fc-box fc-step">battery = 100</div>
+          <div class="fc-arrow">↓</div>
+          <div class="fc-box fc-diamond" style="border-color:var(--purple)">battery &gt; 0?</div>
+          <div class="fc-branch">
+            <div class="fc-branch-col">
+              <div class="fc-label fc-yes">YES ↓</div>
+              <div class="fc-box fc-step" style="border-color:var(--purple)">play_music()</div>
+              <div class="fc-arrow" style="font-size:0.8rem;color:var(--purple)">↑ loop back</div>
+            </div>
+            <div class="fc-branch-col">
+              <div class="fc-label fc-no">NO ↓</div>
+              <div class="fc-box fc-end" style="background:var(--purple)">END</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="section-divider"></div>
+
+<!-- ── EVERYDAY EXAMPLES ──────────────────────────────────────────────────── -->
+<section id="examples">
+  <div class="section-tag">Dive In · Algorithms in Real Life</div>
+  <h2>Can you spot the <span class="accent">control structures</span>?</h2>
+  <div class="examples-grid">
+
+    <div class="example-card">
+      <div class="ex-header" style="background:var(--teal)">🌅 Morning Routine</div>
+      <div class="ex-body">
+        <div>
+          <span class="cs-badge badge-seq">Sequence</span>
+          <span class="cs-badge badge-sel">Selection</span>
+          <span class="cs-badge badge-itr">Iteration</span>
+        </div>
+        <pre>START
+  <b>SEQ:</b> Wake up → turn off alarm
+  <b>SEL:</b> IF school day THEN get dressed
+         ELSE stay in pyjamas
+  <b>ITR:</b> WHILE not full: eat breakfast
+  <b>SEQ:</b> Pack bag → leave house
+END</pre>
+      </div>
+    </div>
+
+    <div class="example-card">
+      <div class="ex-header" style="background:var(--green)">🚦 Traffic Lights</div>
+      <div class="ex-body">
+        <div>
+          <span class="cs-badge badge-seq">Sequence</span>
+          <span class="cs-badge badge-sel">Selection</span>
+          <span class="cs-badge badge-itr">Iteration</span>
+        </div>
+        <pre>START
+  <b>ITR:</b> WHILE intersection is active:
+    <b>SEQ:</b> RED(60s) → GREEN(45s) → AMBER(5s)
+    <b>SEL:</b> IF pedestrian button pressed:
+               show WALK signal
+END</pre>
+      </div>
+    </div>
+
+    <div class="example-card">
+      <div class="ex-header" style="background:var(--purple)">📺 Streaming Service</div>
+      <div class="ex-body">
+        <div>
+          <span class="cs-badge badge-seq">Sequence</span>
+          <span class="cs-badge badge-sel">Selection</span>
+          <span class="cs-badge badge-itr">Iteration</span>
+        </div>
+        <pre>START
+  <b>ITR:</b> WHILE watching:
+    <b>SEQ:</b> Play episode → show credits
+    <b>SEL:</b> IF no input after 5s:
+               auto-play next episode
+END</pre>
+      </div>
+    </div>
+
+    <div class="example-card">
+      <div class="ex-header" style="background:var(--orange)">🎮 Video Game Enemy</div>
+      <div class="ex-body">
+        <div>
+          <span class="cs-badge badge-seq">Sequence</span>
+          <span class="cs-badge badge-sel">Selection</span>
+          <span class="cs-badge badge-itr">Iteration</span>
+        </div>
+        <pre>START
+  <b>ITR:</b> WHILE enemy health > 0:
+    <b>SEL:</b> IF player nearby:
+               attack player
+         ELSE:
+    <b>SEQ:</b>       patrol → scan → move
+END</pre>
+      </div>
+    </div>
+
+  </div>
+  <p style="margin-top:1.2rem;color:#666;font-size:0.92rem;">💡 <strong>Challenge:</strong> Think of a different real-world example. Which control structures does it use? Share with the class.</p>
+</section>
+<div class="section-divider"></div>
+
+<!-- ── QUIZ ───────────────────────────────────────────────────────────────── -->
+<section id="quiz">
+  <div class="section-tag">Check for Understanding · Quiz</div>
+  <h2>Quick <span class="accent">Quiz</span></h2>
+  <div class="quiz-container">
+    <div id="quiz-questions">
+
+      <div class="quiz-q active" data-q="0">
+        <h3>Q1. An algorithm must eventually stop. What characteristic does this describe?</h3>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this, false)">"Definite" — each step is unambiguous</button>
+          <button class="quiz-opt" onclick="answer(this, true)">"Finite" — it must eventually terminate</button>
+          <button class="quiz-opt" onclick="answer(this, false)">"Effective" — every step can be carried out</button>
+          <button class="quiz-opt" onclick="answer(this, false)">"Input" — it takes at least one input</button>
+        </div>
+        <div class="quiz-feedback">
+          <strong>Correct!</strong> "Finite" means the algorithm must end. An algorithm that runs forever produces no useful result.
+        </div>
+      </div>
+
+      <div class="quiz-q" data-q="1">
+        <h3>Q2. Which control structure does this code use?<br><code style="background:#eee;padding:0.2rem 0.5rem;border-radius:4px">for i in range(5): print(i)</code></h3>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this, false)">Sequence</button>
+          <button class="quiz-opt" onclick="answer(this, false)">Selection</button>
+          <button class="quiz-opt" onclick="answer(this, true)">Iteration</button>
+          <button class="quiz-opt" onclick="answer(this, false)">All three</button>
+        </div>
+        <div class="quiz-feedback">
+          <strong>Correct!</strong> <code>for</code> loops are iteration — they repeat a block of code a fixed number of times.
+        </div>
+      </div>
+
+      <div class="quiz-q" data-q="2">
+        <h3>Q3. A GPS app says: "IF traffic detected THEN take alternate route ELSE continue on current road." What control structure is this?</h3>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this, false)">Sequence</button>
+          <button class="quiz-opt" onclick="answer(this, true)">Selection</button>
+          <button class="quiz-opt" onclick="answer(this, false)">Iteration</button>
+          <button class="quiz-opt" onclick="answer(this, false)">None — this is not an algorithm</button>
+        </div>
+        <div class="quiz-feedback">
+          <strong>Correct!</strong> The IF–THEN–ELSE structure is Selection. The GPS <em>decides</em> which path to take based on a condition.
+        </div>
+      </div>
+
+      <div class="quiz-q" data-q="3">
+        <h3>Q4. You are designing an algorithm to find the highest score in a list of 100 game scores. Which control structure is most essential?</h3>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this, false)">Sequence only — just list the steps</button>
+          <button class="quiz-opt" onclick="answer(this, false)">Selection only — check each score with IF</button>
+          <button class="quiz-opt" onclick="answer(this, true)">Iteration — loop through all 100 scores</button>
+          <button class="quiz-opt" onclick="answer(this, false)">None — you need a different approach</button>
+        </div>
+        <div class="quiz-feedback">
+          <strong>Correct!</strong> You need a loop to visit each of the 100 scores. You'd also use selection inside the loop (IF score > current_max) — algorithms often combine all three structures!
+        </div>
+      </div>
+
+      <div class="quiz-q" data-q="4">
+        <h3>Q5. True or False: There is always exactly ONE correct algorithm for any given problem.</h3>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="answer(this, false)">True — there is always one best algorithm</button>
+          <button class="quiz-opt" onclick="answer(this, true)">False — multiple valid algorithms can solve the same problem</button>
+        </div>
+        <div class="quiz-feedback">
+          <strong>Correct!</strong> This is a key insight! Many algorithms can solve the same problem. Some are faster, some use less memory, some are easier to read. That's why computer scientists compare algorithms.
+        </div>
+      </div>
+
+    </div>
+
+    <div class="quiz-score" id="quiz-score">
+      <div class="score-ring" id="score-emoji">🎉</div>
+      <h3 id="score-text"></h3>
+      <p id="score-sub" style="color:#666;margin-top:0.5rem"></p>
+      <button class="btn" style="margin-top:1rem" onclick="resetQuiz()">Try Again</button>
+    </div>
+
+    <div class="quiz-nav" id="quiz-nav">
+      <span class="quiz-progress" id="quiz-progress">Question 1 of 5</span>
+      <button class="btn" id="next-btn" onclick="nextQ()" disabled>Next →</button>
+    </div>
+  </div>
+</section>
+<div class="section-divider"></div>
+
+<!-- ── REFLECT ────────────────────────────────────────────────────────────── -->
+<section id="reflect">
+  <div class="section-tag">Reflect · Exit Ticket</div>
+  <h2>Before you <span class="accent">leave class</span>…</h2>
+  <p style="margin-bottom:1.5rem;font-size:1rem;color:#555;">Answer these questions in the boxes below (or in your workbook). Your teacher may ask you to share one answer.</p>
+  <div class="reflect-grid">
+    <div class="reflect-card" style="border-color:var(--teal)">
+      <div class="qn" style="color:var(--teal)">Question 1</div>
+      <p>In the HoC Minecraft activity, identify <strong>one place</strong> where you used each control structure: Sequence, Selection, and Iteration.</p>
+      <textarea class="workbook" placeholder="Type your answer here…"></textarea>
+      <button class="btn save-btn" onclick="saveNote(this)">Save ✓</button>
+    </div>
+    <div class="reflect-card" style="border-color:var(--green)">
+      <div class="qn" style="color:var(--green)">Question 2</div>
+      <p>Write a short algorithm (in plain English) to describe how you get from your front door to your first class at school.</p>
+      <textarea class="workbook" placeholder="Type your algorithm here…"></textarea>
+      <button class="btn save-btn" onclick="saveNote(this)" style="background:var(--green)">Save ✓</button>
+    </div>
+    <div class="reflect-card" style="border-color:var(--purple)">
+      <div class="qn" style="color:var(--purple)">Question 3</div>
+      <p>Is there only <strong>ONE correct algorithm</strong> for any given problem? Justify your answer with an example.</p>
+      <textarea class="workbook" placeholder="Type your justification here…"></textarea>
+      <button class="btn save-btn" onclick="saveNote(this)" style="background:var(--purple)">Save ✓</button>
+    </div>
+    <div class="reflect-card" style="border-color:var(--amber)">
+      <div class="qn" style="color:var(--amber)">Question 4</div>
+      <p>Name a real-world product or app that uses algorithms. What <strong>problem</strong> does that algorithm solve?</p>
+      <textarea class="workbook" placeholder="Product / app: …&#10;Problem solved: …"></textarea>
+      <button class="btn save-btn" onclick="saveNote(this)" style="background:var(--amber)">Save ✓</button>
+    </div>
+  </div>
+  <div style="background:#fff;border-radius:10px;padding:1.2rem 1.5rem;margin-top:1.5rem;border-left:4px solid var(--navy)">
+    <strong style="color:var(--navy)">Next Lesson →</strong> We will represent algorithms visually using <strong>Flowcharts</strong>.
+    Start thinking: how would you draw your school-route algorithm as a flowchart?
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────────────────── -->
+<footer>
+  Physical Computing · Year 7 · Digital Technologies · Ivanhoe Grammar School<br>
+  <span style="color:#607080">Lesson 1 of 10 · Unit: Physical Computing · Developed by Richard Fox</span>
+</footer>
+
+<!-- ── SCRIPTS ────────────────────────────────────────────────────────────── -->
+<script>
+  // ── Control Structure tabs ────────────────────────────────────────────────
+  function showCS(cs) {
+    document.querySelectorAll('.cs-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.cs-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('cs-' + cs).classList.add('active');
+    document.querySelector('[data-cs="' + cs + '"]').classList.add('active');
+  }
+
+  // ── Quiz ──────────────────────────────────────────────────────────────────
+  let currentQ = 0;
+  let score = 0;
+  const totalQ = 5;
+
+  function answer(btn, correct) {
+    const panel = btn.closest('.quiz-q');
+    const opts = panel.querySelectorAll('.quiz-opt');
+    opts.forEach(o => o.disabled = true);
+    const fb = panel.querySelector('.quiz-feedback');
+    if (correct) {
+      btn.classList.add('correct');
+      score++;
+      fb.classList.add('show', 'ok');
+      fb.innerHTML = '✅ ' + fb.innerHTML;
+    } else {
+      btn.classList.add('wrong');
+      fb.classList.add('show', 'bad');
+      fb.innerHTML = '❌ Not quite. ' + fb.innerHTML;
+      // highlight correct
+      opts.forEach(o => {
+        if (o.onclick.toString().includes('true')) o.classList.add('correct');
+      });
+    }
+    document.getElementById('next-btn').disabled = false;
+  }
+
+  function nextQ() {
+    currentQ++;
+    if (currentQ >= totalQ) {
+      showScore();
+      return;
+    }
+    document.querySelectorAll('.quiz-q').forEach(q => q.classList.remove('active'));
+    document.querySelectorAll('.quiz-q')[currentQ].classList.add('active');
+    document.getElementById('quiz-progress').textContent = `Question ${currentQ+1} of ${totalQ}`;
+    document.getElementById('next-btn').disabled = true;
+    if (currentQ === totalQ - 1) document.getElementById('next-btn').textContent = 'Finish ✓';
+  }
+
+  function showScore() {
+    document.getElementById('quiz-questions').style.display = 'none';
+    document.getElementById('quiz-nav').style.display = 'none';
+    const scoreDiv = document.getElementById('quiz-score');
+    scoreDiv.style.display = 'block';
+    const pct = Math.round((score / totalQ) * 100);
+    document.getElementById('score-emoji').textContent = pct >= 80 ? '🎉' : pct >= 60 ? '👍' : '📚';
+    document.getElementById('score-text').textContent = `You scored ${score} / ${totalQ}  (${pct}%)`;
+    document.getElementById('score-sub').textContent =
+      pct === 100 ? 'Perfect score! You have a strong grasp of algorithms.' :
+      pct >= 80  ? 'Great work! Review any questions you missed.' :
+      pct >= 60  ? 'Good effort — re-read the control structures section and try again.' :
+                   'Keep going! Review the new learning section and give it another try.';
+  }
+
+  function resetQuiz() {
+    currentQ = 0; score = 0;
+    document.querySelectorAll('.quiz-q').forEach((q, i) => {
+      q.classList.toggle('active', i === 0);
+      q.querySelectorAll('.quiz-opt').forEach(o => {
+        o.classList.remove('correct','wrong'); o.disabled = false;
+        // re-bind — strip prefix added by answer()
+      });
+      const fb = q.querySelector('.quiz-feedback');
+      fb.classList.remove('show','ok','bad');
+      // strip the prepended emoji/text
+      fb.innerHTML = fb.innerHTML.replace(/^[✅❌][^.]+\. ?/, '').replace(/^[✅❌] /, '');
+    });
+    document.getElementById('quiz-questions').style.display = '';
+    document.getElementById('quiz-nav').style.display = '';
+    document.getElementById('quiz-score').style.display = 'none';
+    document.getElementById('quiz-progress').textContent = 'Question 1 of 5';
+    document.getElementById('next-btn').disabled = true;
+    document.getElementById('next-btn').textContent = 'Next →';
+  }
+
+  // ── Save notes ────────────────────────────────────────────────────────────
+  function saveNote(btn) {
+    const ta = btn.previousElementSibling;
+    if (ta.value.trim()) {
+      btn.textContent = 'Saved ✓';
+      btn.style.background = 'var(--green)';
+      setTimeout(() => { btn.textContent = 'Save ✓'; btn.style.background = ''; }, 2000);
+    }
+  }
+
+  // ── Active nav link on scroll ─────────────────────────────────────────────
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav .nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+</body>
+</html>
